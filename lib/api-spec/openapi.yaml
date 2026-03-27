@@ -1,0 +1,811 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Jackie Peanuts API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: products
+    description: Product catalog
+  - name: orders
+    description: Order management
+  - name: cart
+    description: Cart operations
+  - name: auth
+    description: Admin authentication
+  - name: subscribers
+    description: Email subscribers
+  - name: wholesale
+    description: Wholesale inquiries
+  - name: analytics
+    description: Website analytics
+  - name: contact
+    description: Contact messages
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List all orders (admin)
+      responses:
+        "200":
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Create a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderRequest"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get an order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}/status:
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Update order status (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOrderStatusRequest"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}/message:
+    post:
+      operationId: sendOrderMessage
+      tags: [orders]
+      summary: Send message to order customer (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessageRequest"
+      responses:
+        "200":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageSentResponse"
+
+  /subscribers:
+    get:
+      operationId: listSubscribers
+      tags: [subscribers]
+      summary: List all subscribers (admin)
+      responses:
+        "200":
+          description: List of subscribers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subscriber"
+    post:
+      operationId: subscribe
+      tags: [subscribers]
+      summary: Subscribe with email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscribeRequest"
+      responses:
+        "201":
+          description: Subscribed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscriber"
+
+  /subscribers/broadcast:
+    post:
+      operationId: broadcastToSubscribers
+      tags: [subscribers]
+      summary: Broadcast message to all subscribers (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BroadcastRequest"
+      responses:
+        "200":
+          description: Broadcast sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BroadcastResponse"
+
+  /wholesale:
+    get:
+      operationId: listWholesaleInquiries
+      tags: [wholesale]
+      summary: List all wholesale inquiries (admin)
+      responses:
+        "200":
+          description: List of wholesale inquiries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WholesaleInquiry"
+    post:
+      operationId: createWholesaleInquiry
+      tags: [wholesale]
+      summary: Submit wholesale inquiry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWholesaleInquiryRequest"
+      responses:
+        "201":
+          description: Inquiry submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WholesaleInquiry"
+
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [contact]
+      summary: Submit contact message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactRequest"
+      responses:
+        "201":
+          description: Message submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactMessage"
+
+  /contact/messages:
+    get:
+      operationId: listContactMessages
+      tags: [contact]
+      summary: List all contact messages (admin)
+      responses:
+        "200":
+          description: List of contact messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContactMessage"
+
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [auth]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminLoginResponse"
+        "401":
+          description: Invalid credentials
+
+  /admin/logout:
+    post:
+      operationId: adminLogout
+      tags: [auth]
+      summary: Admin logout
+      responses:
+        "200":
+          description: Logged out
+
+  /admin/me:
+    get:
+      operationId: getAdminMe
+      tags: [auth]
+      summary: Get current admin session
+      responses:
+        "200":
+          description: Admin session info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSession"
+        "401":
+          description: Not authenticated
+
+  /analytics/visit:
+    post:
+      operationId: recordVisit
+      tags: [analytics]
+      summary: Record a page visit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordVisitRequest"
+      responses:
+        "200":
+          description: Visit recorded
+
+  /analytics/summary:
+    get:
+      operationId: getAnalyticsSummary
+      tags: [analytics]
+      summary: Get analytics summary (admin)
+      responses:
+        "200":
+          description: Analytics summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsSummary"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        imageUrl:
+          type: string
+        price:
+          type: number
+        weight:
+          type: string
+        ingredients:
+          type: string
+        storageInstructions:
+          type: string
+        inStock:
+          type: boolean
+        featured:
+          type: boolean
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductVariant"
+      required:
+        - id
+        - name
+        - description
+        - category
+        - imageUrl
+        - price
+        - weight
+        - inStock
+        - featured
+
+    ProductVariant:
+      type: object
+      properties:
+        id:
+          type: integer
+        productId:
+          type: integer
+        weight:
+          type: string
+        price:
+          type: number
+        imageUrl:
+          type: string
+      required:
+        - id
+        - productId
+        - weight
+        - price
+
+    OrderItem:
+      type: object
+      properties:
+        productId:
+          type: integer
+        variantId:
+          type: integer
+        productName:
+          type: string
+        weight:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+      required:
+        - productId
+        - productName
+        - quantity
+        - price
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        deliveryAddress:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        totalAmount:
+          type: number
+        status:
+          type: string
+          enum: [pending, confirmed, processing, shipped, delivered, cancelled]
+        paymentMethod:
+          type: string
+        paymentStatus:
+          type: string
+          enum: [pending, paid, failed]
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - customerName
+        - customerEmail
+        - customerPhone
+        - items
+        - totalAmount
+        - status
+        - paymentMethod
+        - paymentStatus
+        - createdAt
+
+    CreateOrderRequest:
+      type: object
+      properties:
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        deliveryAddress:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        totalAmount:
+          type: number
+        paymentMethod:
+          type: string
+        notes:
+          type: string
+      required:
+        - customerName
+        - customerEmail
+        - customerPhone
+        - deliveryAddress
+        - items
+        - totalAmount
+        - paymentMethod
+
+    UpdateOrderStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, processing, shipped, delivered, cancelled]
+        paymentStatus:
+          type: string
+          enum: [pending, paid, failed]
+      required:
+        - status
+
+    SendMessageRequest:
+      type: object
+      properties:
+        message:
+          type: string
+        subject:
+          type: string
+      required:
+        - message
+        - subject
+
+    MessageSentResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+        - message
+
+    Subscriber:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        subscribedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - email
+        - subscribedAt
+
+    SubscribeRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+      required:
+        - email
+
+    BroadcastRequest:
+      type: object
+      properties:
+        subject:
+          type: string
+        message:
+          type: string
+      required:
+        - subject
+        - message
+
+    BroadcastResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        recipientCount:
+          type: integer
+        message:
+          type: string
+      required:
+        - success
+        - recipientCount
+        - message
+
+    WholesaleInquiry:
+      type: object
+      properties:
+        id:
+          type: integer
+        businessName:
+          type: string
+        contactName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        location:
+          type: string
+        productsInterested:
+          type: string
+        estimatedVolume:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [new, contacted, approved, declined]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - businessName
+        - contactName
+        - email
+        - phone
+        - status
+        - createdAt
+
+    CreateWholesaleInquiryRequest:
+      type: object
+      properties:
+        businessName:
+          type: string
+        contactName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        location:
+          type: string
+        productsInterested:
+          type: string
+        estimatedVolume:
+          type: string
+        message:
+          type: string
+      required:
+        - businessName
+        - contactName
+        - email
+        - phone
+
+    ContactRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+      required:
+        - name
+        - email
+        - message
+
+    ContactMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - message
+        - createdAt
+
+    AdminLoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AdminLoginResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+        message:
+          type: string
+      required:
+        - success
+        - message
+
+    AdminSession:
+      type: object
+      properties:
+        authenticated:
+          type: boolean
+        email:
+          type: string
+      required:
+        - authenticated
+
+    RecordVisitRequest:
+      type: object
+      properties:
+        page:
+          type: string
+        referrer:
+          type: string
+        userAgent:
+          type: string
+      required:
+        - page
+
+    AnalyticsSummary:
+      type: object
+      properties:
+        totalVisits:
+          type: integer
+        todayVisits:
+          type: integer
+        weekVisits:
+          type: integer
+        monthVisits:
+          type: integer
+        topPages:
+          type: array
+          items:
+            type: object
+            properties:
+              page:
+                type: string
+              visits:
+                type: integer
+            required:
+              - page
+              - visits
+        dailyVisits:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              visits:
+                type: integer
+            required:
+              - date
+              - visits
+      required:
+        - totalVisits
+        - todayVisits
+        - weekVisits
+        - monthVisits
+        - topPages
+        - dailyVisits
