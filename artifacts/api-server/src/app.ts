@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === "production") {
     "../../jackie-peanuts/dist/public",
   );
   app.use(express.static(frontendDir));
-  app.get("*", (_req, res) => {
+  app.get("/{*path}", (_req, res) => {
     res.sendFile(path.join(frontendDir, "index.html"));
   });
 }
