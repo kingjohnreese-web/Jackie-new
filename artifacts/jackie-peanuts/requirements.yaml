@@ -1,0 +1,22 @@
+packages:
+  "framer-motion": "For elegant page transitions and scroll reveals"
+  "zustand": "For persistent shopping cart state management"
+  "recharts": "For admin dashboard analytics charts"
+  "react-hook-form": "For robust form handling and validation"
+  "@hookform/resolvers": "For zod schema validation in forms"
+
+images:
+  - path: "artifacts/jackie-peanuts/public/images/hero-peanuts.png"
+    description: "Warm cinematic photography of a natural peanut butter jar surrounded by fresh roasted peanuts, dark rustic wood background, golden hour lighting, shallow depth of field, premium organic food styling"
+    aspect_ratio: "16:9"
+  - path: "artifacts/jackie-peanuts/public/images/story-legacy.png"
+    description: "Vintage aesthetic warm photo of a traditional African peanut farm at sunset, golden tones, authentic natural feel, cinematic lighting"
+    aspect_ratio: "16:9"
+  - path: "artifacts/jackie-peanuts/public/images/philosophy-nature.png"
+    description: "Minimalist clean photography of raw peanuts on a cream linen cloth, soft shadows, natural sunlight, earthy and pure aesthetic"
+    aspect_ratio: "3:4"
+
+notes:
+  - Using Zustand with localStorage persistence for the cart
+  - Admin authentication uses a simple token in localStorage passed as a Bearer header
+  - Using @workspace/api-client-react for all data fetching hooks
